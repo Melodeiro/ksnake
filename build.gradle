@@ -18,7 +18,7 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '0.1.0'
+    version = '0.1.1'
     ext {
         appName = "my-gdx-game"
         gdxVersion = '1.9.9'
@@ -45,12 +45,12 @@ project(":core") {
 
 
     dependencies {
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        api "io.github.libktx:ktx-app:$ktxVersion"
-        api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-        api "io.github.libktx:ktx-async:$ktxVersion"
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        compile "io.github.libktx:ktx-app:$ktxVersion"
+        compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+        compile "io.github.libktx:ktx-async:$ktxVersion"
     }
 }
 
@@ -59,9 +59,9 @@ project(":desktop") {
 
 
     dependencies {
-        api project(":core")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        compile project(":core")
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
