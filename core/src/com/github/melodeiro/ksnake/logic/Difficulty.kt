@@ -1,7 +1,8 @@
-package com.github.melodeiro.ksnake.game
+package com.github.melodeiro.ksnake.logic
 
-class Difficulty(var trapsToSpawn: Int = 5,
-                 private var speedStep: Int = 8,
+class Difficulty(var trapsToSpawn: Int = 10,
+                 val foodsToSpawn: Int = 1,
+                 private var speedStep: Int = 10,
                  var trapsRespawnEachTurn: Int = 200) {
 
     private val speedSteps = mutableListOf<Long>()

@@ -18,9 +18,9 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '0.1.1'
+    version = '0.1.2'
     ext {
-        appName = "my-gdx-game"
+        appName = "my-gdx-logic"
         gdxVersion = '1.9.9'
         roboVMVersion = '2.3.6'
         box2DLightsVersion = '1.4'
@@ -51,6 +51,8 @@ project(":core") {
         compile "io.github.libktx:ktx-app:$ktxVersion"
         compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         compile "io.github.libktx:ktx-async:$ktxVersion"
+        compile "io.github.libktx:ktx-collections:$ktxVersion"
+        compile "io.github.libktx:ktx-graphics:$ktxVersion"
     }
 }
 
