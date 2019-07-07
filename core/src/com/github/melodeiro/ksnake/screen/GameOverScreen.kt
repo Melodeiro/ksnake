@@ -29,4 +29,9 @@ class GameOverScreen(private val app: App) : KtxScreen {
             finalScoreFont.draw(it, "Score: ${app.game.calculateScore()}", 230f, 250f)
         }
     }
+
+    override fun dispose() {
+        gameOverFont.dispose()
+        finalScoreFont.dispose()
+    }
 }

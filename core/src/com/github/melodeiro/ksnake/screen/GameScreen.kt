@@ -64,4 +64,10 @@ class GameScreen(private val app: App) : KtxScreen {
     override fun show() {
         game.start()
     }
+
+    override fun dispose() {
+        snakeElementImage.dispose()
+        foodImage.dispose()
+        trapImage.dispose()
+    }
 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
-class Game(val app: App) {
+class Game(private val app: App) {
     var moves = 0
     var foodAteAmount = 0
     val snake = Array<Rectangle>()
@@ -26,11 +26,12 @@ class Game(val app: App) {
     private var lastDirection = Direction.RIGHT
     private var newDirection = Direction.RIGHT
     private var isFoodEaten = false
+    private var isBadFoodEaten = false
 
     fun start() {
         spawnSnake()
         spawnRandomFood()
-        respawnRandomTraps()
+        repeat(difficulty.trapsToSpawn) { spawnRandomTrap() }
         isRunning = true
 
         KtxAsync.launch {
@@ -38,9 +39,13 @@ class Game(val app: App) {
                 delay(difficulty.speed)
                 try {
                     val newFirstElementPoint = tryNextMove()
+                    if (isBadFoodEaten) {
+                        spawnRandomTrap()
+                        isBadFoodEaten = false
+                    }
                     moves++
-                    if (moves % difficulty.trapsRespawnEachTurn == 0)
-                        respawnRandomTraps()
+                    if (moves % difficulty.turnsToNewTrap == 0)
+                        spawnRandomTrap(true)
                     if (isFoodEaten) {
                         spawnSnakeElement(newFirstElementPoint.x, newFirstElementPoint.y, true)
                         foodAteAmount++
@@ -71,29 +76,35 @@ class Game(val app: App) {
     }
 
     private fun spawnSnakeElement(x: Float, y: Float, firstElement: Boolean = false) {
+        val newElement = Rectangle(x, y, 16f, 16f)
         if (firstElement)
-            snake.insert(0, Rectangle(x, y, 16f, 16f))
+            snake.insert(0, newElement)
         else
-            snake.add(Rectangle(x, y, 16f, 16f))
+            snake.add(newElement)
     }
 
     private fun spawnRandomFood() {
         var foodPos: Vector2
         do {
-            foodPos = generateRandomPosition()
+            foodPos = getRandomPosition()
         } while (hasSomething(foodPos))
         foods.add(Rectangle(foodPos.x, foodPos.y, 16f, 16f))
     }
 
-    private fun respawnRandomTraps() {
-        traps.clear()
-        repeat(difficulty.trapsToSpawn) {
-            var trapPos: Vector2
-            do {
-                trapPos = generateRandomPosition()
-            } while (hasSomething(trapPos))
-            traps.add(Rectangle(trapPos.x, trapPos.y, 16f, 16f))
-        }
+    private fun spawnRandomTrap(removeLast: Boolean = false) {
+        if (removeLast)
+            traps.removeIndex(traps.size - 1)
+
+        var trapPos: Vector2
+        do {
+            trapPos = getRandomPosition()
+        } while (hasSomething(trapPos))
+        val trapRect = Rectangle(trapPos.x, trapPos.y, 16f, 16f)
+
+        if (removeLast)
+            traps.insert(0, trapRect)
+        else
+            traps.add(trapRect)
     }
 
     private fun hasSomething(pos: Vector2): Boolean {
@@ -112,7 +123,7 @@ class Game(val app: App) {
         return false
     }
 
-    private fun generateRandomPosition() = Vector2(MathUtils.random(0, (app.cameraWidth / 16f).toInt() - 1) * 16f, MathUtils.random(0, (app.cameraHeight / 16f).toInt() - 1) * 16f)
+    private fun getRandomPosition() = Vector2(MathUtils.random(0, (app.cameraWidth / 16f).toInt() - 1) * 16f, MathUtils.random(0, (app.cameraHeight / 16f).toInt() - 1) * 16f)
 
     private fun spawnSnake() {
         spawnSnakeElement(96f, 64f) // last element
@@ -162,6 +173,7 @@ class Game(val app: App) {
             if (it.x == newPos.x && it.y == newPos.y) {
                 traps.removeValue(it, true)
                 ateBadFood()
+                isBadFoodEaten = true
             }
         }
         foods.forEach {

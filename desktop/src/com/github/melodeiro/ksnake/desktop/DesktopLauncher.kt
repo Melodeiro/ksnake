@@ -8,5 +8,6 @@ import com.github.melodeiro.ksnake.App
 
 fun main(args: Array<String>) {
     val config = LwjglApplicationConfiguration()
+    config.title = "KSnake"
     LwjglApplication(App(), config)
 }
