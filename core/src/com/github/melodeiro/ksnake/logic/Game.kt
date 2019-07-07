@@ -11,16 +11,17 @@ import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
 class Game(private val app: App) {
-    var moves = 0
-    var foodAteAmount = 0
-    val snake = Array<Rectangle>()
     val difficulty = Difficulty()
+
+    val snake = Array<Rectangle>()
     val foods = Array<Rectangle>()
     val traps = Array<Rectangle>()
 
     var isRunning: Boolean = false
         private set
 
+    private var moves = 0
+    private var foodAteAmount = 0
     private var dX = 16f
     private var dY = 0f
     private var lastDirection = Direction.RIGHT
@@ -189,5 +190,20 @@ class Game(private val app: App) {
         snake.removeIndex(snake.size - 1)
         if (snake.isEmpty)
             throw GameOver()
+    }
+
+    fun restart() {
+        moves = 0
+        foodAteAmount = 0
+        dX = 16f
+        dY = 0f
+        lastDirection = Direction.RIGHT
+        newDirection = Direction.RIGHT
+        isFoodEaten = false
+        isBadFoodEaten = false
+
+        snake.clear()
+        foods.clear()
+        traps.clear()
     }
 }

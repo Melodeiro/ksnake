@@ -11,7 +11,7 @@ import ktx.graphics.use
 
 class MainMenuScreen(private val app: App) : KtxScreen {
     private val camera = OrthographicCamera().apply { setToOrtho(false, app.cameraWidth, app.cameraHeight) }
-    private val game = app.game
+    private val difficulty = app.game.difficulty
     private val font by lazy { BitmapFont() }
 
     override fun show() {
@@ -27,16 +27,16 @@ class MainMenuScreen(private val app: App) : KtxScreen {
 
             font.draw(it, "Welcome to KSnake", 130f, 400f)
             font.draw(it, "Press RIGHT ARROW key to begin", 130f, 350f)
-            font.draw(it, "Current difficulty level: ${game.difficulty.speedLevel}", 130f, 300f)
+            font.draw(it, "Current difficulty level: ${difficulty.speedLevel}", 130f, 300f)
             font.draw(it, "UP ARROW - increase difficulty", 130f, 250f)
             font.draw(it, "DOWN ARROW - decrease difficulty", 130f, 200f)
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            game.difficulty.increaseSpeed()
+            difficulty.increaseSpeed()
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            game.difficulty.decreaseSpeed()
+            difficulty.decreaseSpeed()
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             app.addScreen(GameScreen(app))

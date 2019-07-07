@@ -1,5 +1,7 @@
 package com.github.melodeiro.ksnake.screen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
@@ -27,6 +29,15 @@ class GameOverScreen(private val app: App) : KtxScreen {
         app.batch.use {
             gameOverFont.draw(it, "GAME OVER", 230f, 300f)
             finalScoreFont.draw(it, "Score: ${app.game.calculateScore()}", 230f, 250f)
+            gameOverFont.draw(it, "ENTER - restart", 230f, 200f)
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            app.addScreen(MainMenuScreen(app))
+            app.setScreen<MainMenuScreen>()
+            app.removeScreen<GameOverScreen>()
+            app.game.restart()
+            dispose()
         }
     }
 

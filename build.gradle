@@ -18,7 +18,7 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '0.2.0'
+    version = '0.2.1'
     ext {
         appName = "my-gdx-logic"
         gdxVersion = '1.9.9'
