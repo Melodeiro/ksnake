@@ -47,16 +47,16 @@ class GameScreen(private val app: App) : KtxScreen {
             game.foods.forEach { batch.draw(foodImage, it.x, it.y, it.width, it.height) }
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
             game.tryDirection(Direction.LEFT)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             game.tryDirection(Direction.RIGHT)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             game.tryDirection(Direction.UP)
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             game.tryDirection(Direction.DOWN)
         }
     }

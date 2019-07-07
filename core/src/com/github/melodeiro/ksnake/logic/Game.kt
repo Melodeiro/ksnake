@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Queue
 import com.github.melodeiro.ksnake.App
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -20,14 +21,16 @@ class Game(private val app: App) {
     var isRunning: Boolean = false
         private set
 
+    private val controlQueue = Queue<Direction>().apply { addFirst(Direction.RIGHT) }
+
     private var moves = 0
     private var foodAteAmount = 0
     private var dX = 16f
     private var dY = 0f
     private var lastDirection = Direction.RIGHT
-    private var newDirection = Direction.RIGHT
     private var isFoodEaten = false
     private var isBadFoodEaten = false
+    private var controlsResetIn = 0
 
     fun start() {
         spawnSnake()
@@ -68,7 +71,11 @@ class Game(private val app: App) {
     }
 
     fun tryDirection(newDirection: Direction) {
-        this.newDirection = newDirection
+        if (!controlQueue.isEmpty && controlQueue.last() == newDirection)
+            return
+
+        controlQueue.addLast(newDirection)
+        controlsResetIn = 2
     }
 
     fun calculateScore(): Int {
@@ -134,7 +141,12 @@ class Game(private val app: App) {
     }
 
     private fun tryNextMove(): Vector2 {
-        val direction = if (newDirection isOppositeTo lastDirection) lastDirection else newDirection
+        if (controlsResetIn < 1)
+            controlQueue.clear()
+        else
+            controlsResetIn--
+        val newDirection: Direction? = if (controlQueue.isEmpty) null else controlQueue.removeFirst()
+        val direction = if (newDirection == null || newDirection isOppositeTo lastDirection) lastDirection else newDirection
         when (direction) {
             Direction.UP -> {
                 dX = 0f
@@ -198,9 +210,11 @@ class Game(private val app: App) {
         dX = 16f
         dY = 0f
         lastDirection = Direction.RIGHT
-        newDirection = Direction.RIGHT
+        controlQueue.clear()
+        controlQueue.addFirst(Direction.RIGHT)
         isFoodEaten = false
         isBadFoodEaten = false
+        controlsResetIn = 0
 
         snake.clear()
         foods.clear()
