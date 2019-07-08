@@ -38,7 +38,6 @@ class Game(private val app: App) {
     private var isPUSpawned = false
     private var controlsResetIn = 0
     private var nextPUIn = difficulty.turnsToPowerUp
-    private var nextPU: PowerUp.Type = PowerUp.Type.NONE
     private var currentPU = PowerUp.none()
 
     fun getCurrentPUInfo(): String {
@@ -51,7 +50,6 @@ class Game(private val app: App) {
     fun start() {
         spawnSnake()
         spawnRandomFood()
-        generateRandomPU()
         repeat(difficulty.trapsToSpawn) { spawnRandomTrap() }
         isRunning = true
 
@@ -100,7 +98,7 @@ class Game(private val app: App) {
         do {
             newPUPos = getRandomPosition()
         } while (hasSomething(newPUPos))
-        powerUps.add(PowerUp(nextPU, newPUPos.x, newPUPos.y, cellSize, cellSize))
+        powerUps.add(PowerUp(generateRandomPU(), newPUPos.x, newPUPos.y, cellSize, cellSize))
         nextPUIn = difficulty.turnsToPowerUp
     }
 
@@ -117,10 +115,9 @@ class Game(private val app: App) {
         return if (tempScores < 0) 0 else tempScores.toInt()
     }
 
-    private fun generateRandomPU() {
+    private fun generateRandomPU(): PowerUp.Type {
         val powerUps = PowerUp.Type.values()
-        nextPU = powerUps[MathUtils.random(1, powerUps.size - 1)]
-        nextPUIn = difficulty.turnsToPowerUp
+        return powerUps[MathUtils.random(1, powerUps.size - 1)]
     }
 
     private fun spawnSnakeElement(x: Float, y: Float, firstElement: Boolean = false) {
@@ -256,7 +253,6 @@ class Game(private val app: App) {
         isPUSpawned = false
         controlsResetIn = 0
         nextPUIn = difficulty.turnsToPowerUp
-        nextPU = PowerUp.Type.NONE
         currentPU = PowerUp.none()
 
         snake.clear()
