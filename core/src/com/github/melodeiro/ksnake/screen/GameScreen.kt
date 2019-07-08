@@ -27,6 +27,7 @@ class GameScreen(private val app: App) : KtxScreen {
     private val snakeElementImage = Texture("snake_element.png")
     private val foodImage = Texture("food.png")
     private val trapImage = Texture("trap.png")
+    private val fieldBackgroundImage = Texture("field_background.png")
 
     override fun render(delta: Float) {
         if (!game.isRunning) {
@@ -42,6 +43,7 @@ class GameScreen(private val app: App) : KtxScreen {
 
         // Draw all textures
         app.batch.use { batch ->
+            batch.draw(fieldBackgroundImage, game.field.x, game.field.y, game.field.width, game.field.height)
             game.snake.forEach { batch.draw(snakeElementImage, it.x, it.y, it.width, it.height) }
             game.traps.forEach { batch.draw(trapImage, it.x, it.y, it.width, it.height) }
             game.foods.forEach { batch.draw(foodImage, it.x, it.y, it.width, it.height) }
