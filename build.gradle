@@ -11,14 +11,13 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
     }
 }
 
 allprojects {
     apply plugin: "idea"
 
-    version = '0.3.1'
+    version = '0.4.0'
     ext {
         appName = "my-gdx-logic"
         gdxVersion = '1.9.9'

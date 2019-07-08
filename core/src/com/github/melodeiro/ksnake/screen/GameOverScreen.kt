@@ -13,16 +13,15 @@ import ktx.graphics.use
 class GameOverScreen(private val app: App) : KtxScreen {
     private val camera = OrthographicCamera().apply { setToOrtho(false, app.cameraWidth, app.cameraHeight) }
 
-
     override fun render(delta: Float) {
         camera.update()
         app.batch.projectionMatrix = camera.combined
 
         app.batch.use {
-            val text = "   [#CC0000FF]GAME OVER[]\n\n" +
-                    "[#FFA500FF]Score: ${app.game.calculateScore()}[]\n\n" +
+            val text = "[#CC0000FF]GAME OVER[]\n" +
+                    "[#FFA500FF]Score: ${app.game.calculateScore()}[]\n" +
                     "[#CC0000FF]ENTER - restart[]"
-            app.font.draw(it, text, 140f, 340f)
+            app.font.draw(it, text, 140f, 300f)
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {

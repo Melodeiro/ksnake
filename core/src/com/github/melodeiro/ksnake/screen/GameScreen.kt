@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
 import com.github.melodeiro.ksnake.logic.Direction
+import com.github.melodeiro.ksnake.logic.entities.PowerUp
 import ktx.app.KtxScreen
 import ktx.graphics.color
 import ktx.graphics.use
@@ -22,6 +23,7 @@ class GameScreen(private val app: App) : KtxScreen {
     private val snakeElementImage = Texture("snake_element.png")
     private val foodImage = Texture("food.png")
     private val trapImage = Texture("trap.png")
+    private val slowImage = Texture("slow.png")
     private val fieldBackgroundImage = Texture("field_background.png")
     private val mainFont = app.assetManager.get<BitmapFont>("Righteous-Regular.ttf")
 
@@ -43,11 +45,19 @@ class GameScreen(private val app: App) : KtxScreen {
 
         // Draw all textures
         app.batch.use { batch ->
-            mainFont.draw(batch, "SCORE: ${game.calculateScore()}", game.field.x + 12f, game.field.maxY + mainFont.lineHeight)
+            mainFont.draw(batch, "SCORE: ${game.calculateScore()}", game.field.x + 17f, game.field.maxY + mainFont.lineHeight)
+            mainFont.draw(batch, "PU: ${game.getCurrentPUInfo()}", game.field.x + 250f, game.field.maxY + mainFont.lineHeight)
             batch.draw(fieldBackgroundImage, game.field.x, game.field.y, game.field.width, game.field.height)
             game.snake.forEach { batch.draw(snakeElementImage, it.x, it.y, it.width, it.height) }
             game.traps.forEach { batch.draw(trapImage, it.x, it.y, it.width, it.height) }
             game.foods.forEach { batch.draw(foodImage, it.x, it.y, it.width, it.height) }
+            game.powerUps.forEach {
+                val puImage = when(game.nextPU) {
+                    PowerUp.Type.SLOW -> slowImage
+                    PowerUp.Type.NONE -> throw IllegalStateException("Tried to render spawned NONE power up")
+                }
+                batch.draw(puImage, it.x, it.y, it.width, it.height)
+            }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
@@ -62,6 +72,9 @@ class GameScreen(private val app: App) : KtxScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             game.tryDirection(Direction.DOWN)
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            game.activateCurrentPU()
+        }
     }
 
     override fun show() {
@@ -73,5 +86,6 @@ class GameScreen(private val app: App) : KtxScreen {
         fieldBackgroundImage.dispose()
         foodImage.dispose()
         trapImage.dispose()
+        slowImage.dispose()
     }
 }

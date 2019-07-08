@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
 import com.github.melodeiro.ksnake.App
+import com.github.melodeiro.ksnake.logic.entities.PowerUp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ class Game(private val app: App) {
     val snake = Array<Rectangle>()
     val foods = Array<Rectangle>()
     val traps = Array<Rectangle>()
+    val powerUps = Array<PowerUp>()
 
     var isRunning: Boolean = false
         private set
@@ -26,24 +28,36 @@ class Game(private val app: App) {
     private val controlQueue = Queue<Direction>().apply { addFirst(Direction.RIGHT) }
 
     private val cellSize = 16f
-    private var moves = 0
+    private var moves = 0L
     private var foodAteAmount = 0
     private var dX = cellSize
     private var dY = 0f
     private var lastDirection = Direction.RIGHT
     private var isFoodEaten = false
     private var isBadFoodEaten = false
+    private var isPUSpawned = false
     private var controlsResetIn = 0
+    private var nextPUIn = difficulty.turnsToPowerUp
+    var nextPU: PowerUp.Type = PowerUp.Type.NONE
+    private var currentPU = PowerUp.none()
+
+    fun getCurrentPUInfo(): String {
+        val turnsToExpiration = currentPU.turnsToExpiration(moves)
+        val spaceHint = if (!currentPU.isActive && currentPU.type != PowerUp.Type.NONE) " [#FFA500FF][SPACE][]" else ""
+        val puText = if (turnsToExpiration > 0) "${currentPU.type} $turnsToExpiration" else "${currentPU.type}"
+        return "$puText $spaceHint"
+    }
 
     fun start() {
         spawnSnake()
         spawnRandomFood()
+        generateRandomPU()
         repeat(difficulty.trapsToSpawn) { spawnRandomTrap() }
         isRunning = true
 
         KtxAsync.launch {
             while (isActive && isRunning) {
-                delay(difficulty.movingDelay)
+                delay(difficulty.getMovingDelay(currentPU))
                 try {
                     val newFirstElementPoint = tryNextMove()
                     if (isBadFoodEaten) {
@@ -51,7 +65,13 @@ class Game(private val app: App) {
                         isBadFoodEaten = false
                     }
                     moves++
-                    if (moves % difficulty.turnsToNewTrap == 0)
+                    if (nextPUIn > 0)
+                        nextPUIn--
+                    else if (!isPUSpawned)
+                        spawnPU()
+                    if (currentPU.isActive && currentPU.turnsToExpiration(moves) < 1)
+                        currentPU = PowerUp.none()
+                    if (moves % difficulty.turnsToNewTrap == 0L)
                         spawnRandomTrap(true)
                     if (isFoodEaten) {
                         spawnSnakeElement(newFirstElementPoint.x, newFirstElementPoint.y, true)
@@ -75,6 +95,15 @@ class Game(private val app: App) {
         }
     }
 
+    private fun spawnPU() {
+        var newPUPos: Vector2
+        do {
+            newPUPos = getRandomPosition()
+        } while (hasSomething(newPUPos))
+        powerUps.add(PowerUp(nextPU, newPUPos.x, newPUPos.y, cellSize, cellSize))
+        nextPUIn = difficulty.turnsToPowerUp
+    }
+
     fun tryDirection(newDirection: Direction) {
         if (!controlQueue.isEmpty && controlQueue.last() == newDirection)
             return
@@ -86,6 +115,12 @@ class Game(private val app: App) {
     fun calculateScore(): Int {
         val tempScores = (snake.size - 4) * 50f * 1.3.pow(difficulty.speedLevel) - moves
         return if (tempScores < 0) 0 else tempScores.toInt()
+    }
+
+    private fun generateRandomPU() {
+        val powerUps = PowerUp.Type.values()
+        nextPU = powerUps[MathUtils.random(1, powerUps.size - 1)]
+        nextPUIn = difficulty.turnsToPowerUp
     }
 
     private fun spawnSnakeElement(x: Float, y: Float, firstElement: Boolean = false) {
@@ -202,6 +237,15 @@ class Game(private val app: App) {
                 isFoodEaten = true
             }
         }
+        powerUps.forEach {
+            if (it.x == newPos.x && it.y == newPos.y) {
+                if (currentPU.type == it.type)
+                    currentPU.stack()
+                else
+                    currentPU = it
+                powerUps.removeValue(it, true)
+            }
+        }
         return newPos
     }
 
@@ -212,7 +256,7 @@ class Game(private val app: App) {
     }
 
     fun restart() {
-        moves = 0
+        moves = 0L
         foodAteAmount = 0
         dX = cellSize
         dY = 0f
@@ -221,10 +265,19 @@ class Game(private val app: App) {
         controlQueue.addFirst(Direction.RIGHT)
         isFoodEaten = false
         isBadFoodEaten = false
+        isPUSpawned = false
         controlsResetIn = 0
+        nextPUIn = difficulty.turnsToPowerUp
+        nextPU = PowerUp.Type.NONE
+        currentPU = PowerUp.none()
 
         snake.clear()
         foods.clear()
         traps.clear()
+        powerUps.clear()
+    }
+
+    fun activateCurrentPU() {
+        currentPU.activate(moves)
     }
 }

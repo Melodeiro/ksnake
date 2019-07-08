@@ -29,8 +29,9 @@ class MainMenuScreen(private val app: App) : KtxScreen {
                     "Press [#FFA500FF]RIGHT ARROW[] key to begin\n" +
                     "Current difficulty level: [#CC0000FF]${difficulty.speedLevel}[]\n" +
                     "[#FFA500FF]UP ARROW[] - increase difficulty\n" +
-                    "[#FFA500FF]DOWN ARROW[] - decrease difficulty"
-            app.font.draw(it, text, textX, 350f)
+                    "[#FFA500FF]DOWN ARROW[] - decrease difficulty\n" +
+                    "[#FFA500FF]SPACE[] - activate Power Up"
+            app.font.draw(it, text, textX, 365f)
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
