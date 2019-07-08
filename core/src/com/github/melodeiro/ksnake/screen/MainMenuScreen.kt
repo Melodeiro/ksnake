@@ -23,7 +23,6 @@ class MainMenuScreen(private val app: App) : KtxScreen {
         app.batch.projectionMatrix = camera.combined
 
         app.batch.use {
-
             val textX = 30f
             val text = "Welcome to KSnake\n" +
                     "Press [#FFA500FF]RIGHT ARROW[] key to begin\n" +
@@ -40,15 +39,11 @@ class MainMenuScreen(private val app: App) : KtxScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             difficulty.decreaseSpeed()
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             app.addScreen(GameScreen(app))
             app.setScreen<GameScreen>()
             app.removeScreen<MainMenuScreen>()
             dispose()
         }
-    }
-
-    override fun dispose() {
-
     }
 }

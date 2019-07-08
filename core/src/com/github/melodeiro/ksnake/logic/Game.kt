@@ -38,7 +38,7 @@ class Game(private val app: App) {
     private var isPUSpawned = false
     private var controlsResetIn = 0
     private var nextPUIn = difficulty.turnsToPowerUp
-    var nextPU: PowerUp.Type = PowerUp.Type.NONE
+    private var nextPU: PowerUp.Type = PowerUp.Type.NONE
     private var currentPU = PowerUp.none()
 
     fun getCurrentPUInfo(): String {
@@ -156,19 +156,7 @@ class Game(private val app: App) {
     }
 
     private fun hasSomething(pos: Vector2): Boolean {
-        foods.forEach {
-            if (it.x == pos.x && it.y == pos.y)
-                return true
-        }
-        traps.forEach {
-            if (it.x == pos.x && it.y == pos.y)
-                return true
-        }
-        snake.forEach {
-            if (it.x == pos.x && it.y == pos.y)
-                return true
-        }
-        return false
+        return (foods + traps + snake + powerUps).any { it is Rectangle && it.x == pos.x && it.y == pos.y }
     }
 
     private fun getRandomCellPos(start: Float, end: Float): Float = MathUtils.random((start / cellSize).toInt(), (end / cellSize).toInt()) * cellSize

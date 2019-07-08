@@ -52,7 +52,7 @@ class GameScreen(private val app: App) : KtxScreen {
             game.traps.forEach { batch.draw(trapImage, it.x, it.y, it.width, it.height) }
             game.foods.forEach { batch.draw(foodImage, it.x, it.y, it.width, it.height) }
             game.powerUps.forEach {
-                val puImage = when(game.nextPU) {
+                val puImage = when(it.type) {
                     PowerUp.Type.SLOW -> slowImage
                     PowerUp.Type.NONE -> throw IllegalStateException("Tried to render spawned NONE power up")
                 }
