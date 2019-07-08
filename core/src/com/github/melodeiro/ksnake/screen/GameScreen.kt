@@ -4,16 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
 import com.github.melodeiro.ksnake.logic.Direction
-import com.github.melodeiro.ksnake.logic.GameOver
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import ktx.app.KtxScreen
-import ktx.async.KtxAsync
+import ktx.graphics.color
 import ktx.graphics.use
 
 class GameScreen(private val app: App) : KtxScreen {
@@ -28,6 +23,11 @@ class GameScreen(private val app: App) : KtxScreen {
     private val foodImage = Texture("food.png")
     private val trapImage = Texture("trap.png")
     private val fieldBackgroundImage = Texture("field_background.png")
+    private val mainFont = app.assetManager.get<BitmapFont>("Righteous-Regular.ttf")
+
+    init {
+        mainFont.color = color(0f, 0.5f, 0f)
+    }
 
     override fun render(delta: Float) {
         if (!game.isRunning) {
@@ -43,6 +43,7 @@ class GameScreen(private val app: App) : KtxScreen {
 
         // Draw all textures
         app.batch.use { batch ->
+            mainFont.draw(batch, "SCORE: ${game.calculateScore()}", game.field.x + 12f, game.field.maxY + mainFont.lineHeight)
             batch.draw(fieldBackgroundImage, game.field.x, game.field.y, game.field.width, game.field.height)
             game.snake.forEach { batch.draw(snakeElementImage, it.x, it.y, it.width, it.height) }
             game.traps.forEach { batch.draw(trapImage, it.x, it.y, it.width, it.height) }
@@ -69,6 +70,7 @@ class GameScreen(private val app: App) : KtxScreen {
 
     override fun dispose() {
         snakeElementImage.dispose()
+        fieldBackgroundImage.dispose()
         foodImage.dispose()
         trapImage.dispose()
     }

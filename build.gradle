@@ -18,7 +18,7 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '0.3.0'
+    version = '0.3.1'
     ext {
         appName = "my-gdx-logic"
         gdxVersion = '1.9.9'
@@ -45,14 +45,25 @@ project(":core") {
 
 
     dependencies {
+        // Kotlin
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+        
+        // libGDX
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+
+
+
+        // libKDX
         compile "io.github.libktx:ktx-app:$ktxVersion"
-        compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
         compile "io.github.libktx:ktx-async:$ktxVersion"
         compile "io.github.libktx:ktx-collections:$ktxVersion"
         compile "io.github.libktx:ktx-graphics:$ktxVersion"
+        compile group: 'io.github.libktx', name: 'ktx-freetype', version: ktxVersion
+        compile group: 'io.github.libktx', name: 'ktx-assets', version: ktxVersion
     }
 }
 

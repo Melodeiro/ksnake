@@ -12,11 +12,10 @@ import ktx.graphics.use
 class MainMenuScreen(private val app: App) : KtxScreen {
     private val camera = OrthographicCamera().apply { setToOrtho(false, app.cameraWidth, app.cameraHeight) }
     private val difficulty = app.game.difficulty
-    private val font by lazy { BitmapFont() }
 
     override fun show() {
-        font.data.setScale(2f)
-        font.color = color(0f, 1f, 0f)
+        app.font.color = color(0f, 0.7f, 0f)
+        app.font.data.markupEnabled = true
     }
 
     override fun render(delta: Float) {
@@ -25,11 +24,13 @@ class MainMenuScreen(private val app: App) : KtxScreen {
 
         app.batch.use {
 
-            font.draw(it, "Welcome to KSnake", 130f, 400f)
-            font.draw(it, "Press RIGHT ARROW key to begin", 130f, 350f)
-            font.draw(it, "Current difficulty level: ${difficulty.speedLevel}", 130f, 300f)
-            font.draw(it, "UP ARROW - increase difficulty", 130f, 250f)
-            font.draw(it, "DOWN ARROW - decrease difficulty", 130f, 200f)
+            val textX = 30f
+            val text = "Welcome to KSnake\n" +
+                    "Press [#FFA500FF]RIGHT ARROW[] key to begin\n" +
+                    "Current difficulty level: [#CC0000FF]${difficulty.speedLevel}[]\n" +
+                    "[#FFA500FF]UP ARROW[] - increase difficulty\n" +
+                    "[#FFA500FF]DOWN ARROW[] - decrease difficulty"
+            app.font.draw(it, text, textX, 350f)
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
@@ -47,6 +48,6 @@ class MainMenuScreen(private val app: App) : KtxScreen {
     }
 
     override fun dispose() {
-        font.dispose()
+
     }
 }

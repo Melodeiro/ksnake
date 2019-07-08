@@ -4,16 +4,16 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
-import com.badlogic.gdx.utils.ArrayMap
 import com.badlogic.gdx.utils.Queue
 import com.github.melodeiro.ksnake.App
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
+import kotlin.math.pow
 
 class Game(private val app: App) {
-    val field = WorldBorders(160f, 64f, 480f, 480f)
+    val field = WorldBorders(0f, 0f, 480f, 480f)
     val difficulty = Difficulty()
 
     val snake = Array<Rectangle>()
@@ -43,7 +43,7 @@ class Game(private val app: App) {
 
         KtxAsync.launch {
             while (isActive && isRunning) {
-                delay(difficulty.speed)
+                delay(difficulty.movingDelay)
                 try {
                     val newFirstElementPoint = tryNextMove()
                     if (isBadFoodEaten) {
@@ -84,7 +84,7 @@ class Game(private val app: App) {
     }
 
     fun calculateScore(): Int {
-        val tempScores = (snake.size - 4) * 100f * difficulty.speedLevel - moves
+        val tempScores = (snake.size - 4) * 50f * 1.3.pow(difficulty.speedLevel) - moves
         return if (tempScores < 0) 0 else tempScores.toInt()
     }
 

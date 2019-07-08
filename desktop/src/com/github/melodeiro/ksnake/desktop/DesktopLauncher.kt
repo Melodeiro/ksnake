@@ -9,7 +9,8 @@ import com.github.melodeiro.ksnake.App
 fun main() {
     val config = LwjglApplicationConfiguration()
     config.title = "KSnake"
-    config.width = 800
-    config.height = 600
+    config.width = 480
+    config.height = 525
+    config.resizable = false
     LwjglApplication(App(), config)
 }
