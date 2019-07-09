@@ -7,10 +7,18 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
 import com.github.melodeiro.ksnake.logic.Direction
+import com.github.melodeiro.ksnake.logic.GameOver
 import com.github.melodeiro.ksnake.logic.entities.PowerUp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import ktx.app.KtxScreen
+import ktx.async.KtxAsync
+import ktx.async.KtxDispatcher
 import ktx.graphics.color
 import ktx.graphics.use
+import kotlin.coroutines.CoroutineContext
 
 class GameScreen(private val app: App) : KtxScreen {
     private val game = app.game
@@ -27,18 +35,13 @@ class GameScreen(private val app: App) : KtxScreen {
     private val fieldBackgroundImage = Texture("field_background.png")
     private val mainFont = app.assetManager.get<BitmapFont>("Righteous-Regular.ttf")
 
+    private var gameJob: Job? = null
+
     init {
         mainFont.color = color(0f, 0.5f, 0f)
     }
 
     override fun render(delta: Float) {
-        if (!game.isRunning) {
-            app.addScreen(GameOverScreen(app))
-            app.setScreen<GameOverScreen>()
-            app.removeScreen<GameScreen>()
-            dispose()
-        }
-
         // generally good practice to update the camera's matrices once per frame
         camera.update()
         app.batch.projectionMatrix = camera.combined
@@ -78,10 +81,20 @@ class GameScreen(private val app: App) : KtxScreen {
     }
 
     override fun show() {
-        game.start()
+        gameJob = KtxAsync.launch {
+            try {
+                game.start()
+            } catch (e: GameOver) {
+                app.addScreen(GameOverScreen(app))
+                app.setScreen<GameOverScreen>()
+                app.removeScreen<GameScreen>()
+                dispose()
+            }
+        }
     }
 
     override fun dispose() {
+        gameJob?.cancel()
         snakeElementImage.dispose()
         fieldBackgroundImage.dispose()
         foodImage.dispose()

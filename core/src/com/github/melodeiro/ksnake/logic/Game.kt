@@ -7,10 +7,10 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
 import com.github.melodeiro.ksnake.App
 import com.github.melodeiro.ksnake.logic.entities.PowerUp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ktx.async.KtxAsync
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 import kotlin.math.pow
 
 class Game(private val app: App) {
@@ -21,9 +21,6 @@ class Game(private val app: App) {
     val foods = Array<Rectangle>()
     val traps = Array<Rectangle>()
     val powerUps = Array<PowerUp>()
-
-    var isRunning: Boolean = false
-        private set
 
     private val controlQueue = Queue<Direction>().apply { addFirst(Direction.RIGHT) }
 
@@ -47,49 +44,45 @@ class Game(private val app: App) {
         return "$puText $spaceHint"
     }
 
-    fun start() {
+    suspend fun start() {
         spawnSnake()
         spawnRandomFood()
         repeat(difficulty.trapsToSpawn) { spawnRandomTrap() }
-        isRunning = true
 
-        KtxAsync.launch {
-            while (isActive && isRunning) {
-                delay(difficulty.getMovingDelay(currentPU))
-                try {
-                    val newFirstElementPoint = tryNextMove()
-                    if (isBadFoodEaten) {
-                        spawnRandomTrap()
-                        isBadFoodEaten = false
-                    }
-                    moves++
-                    if (nextPUIn > 0)
-                        nextPUIn--
-                    else if (!isPUSpawned)
-                        spawnPU()
-                    if (currentPU.isActive && currentPU.turnsToExpiration(moves) < 1)
-                        currentPU = PowerUp.none()
-                    if (moves % difficulty.turnsToNewTrap == 0L)
-                        spawnRandomTrap(true)
-                    if (isFoodEaten) {
-                        spawnSnakeElement(newFirstElementPoint.x, newFirstElementPoint.y, true)
-                        foodAteAmount++
-                        isFoodEaten = false
-                        spawnRandomFood()
-                        continue
-                    }
+        while (coroutineContext.isActive) {
+            delay(difficulty.getMovingDelay(currentPU))
 
-                    // move snake from last to second element
-                    for (i in snake.size - 1 downTo 1) {
-                        snake[i].x = snake[i - 1].x
-                        snake[i].y = snake[i - 1].y
-                    }
-                    // move snake head
-                    snake[0].setPosition(newFirstElementPoint)
-                } catch (e: GameOver) {
-                    isRunning = false
-                }
+            val newFirstElementPoint = tryNextMove()
+            if (isBadFoodEaten) {
+                spawnRandomTrap()
+                isBadFoodEaten = false
             }
+            moves++
+            if (nextPUIn > 0)
+                nextPUIn--
+            else if (!isPUSpawned)
+                spawnPU()
+            if (currentPU.isActive && currentPU.turnsToExpiration(moves) < 1)
+                currentPU = PowerUp.none()
+            if (moves % difficulty.turnsToNewTrap == 0L)
+                spawnRandomTrap(true)
+
+            // Just spawn new head at the place of eaten food and skip turn
+            if (isFoodEaten) {
+                spawnSnakeElement(newFirstElementPoint.x, newFirstElementPoint.y, true)
+                foodAteAmount++
+                isFoodEaten = false
+                spawnRandomFood()
+                continue
+            }
+
+            // move snake from last to second element
+            for (i in snake.size - 1 downTo 1) {
+                snake[i].x = snake[i - 1].x
+                snake[i].y = snake[i - 1].y
+            }
+            // move snake head
+            snake[0].setPosition(newFirstElementPoint)
         }
     }
 
