@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
-import com.github.melodeiro.ksnake.App
 import com.github.melodeiro.ksnake.logic.entity.PowerUp
 import kotlinx.coroutines.*
 import ktx.log.logger
@@ -15,7 +14,7 @@ import kotlin.math.pow
 private val log = logger<Game>()
 
 class Game {
-    val field = WorldBorders(0f, 0f, 480f, 480f)
+    val field = WorldSettings(0f, 0f, 480f, 480f, 16f)
     val difficulty = Difficulty()
 
     val snake = Array<Rectangle>()
@@ -71,7 +70,7 @@ class Game {
             if (moves % difficulty.turnsToNewTrap == 0L)
                 spawnRandomTrap(true)
 
-            // Just spawn new head at the place of eaten food and skip turn
+            // Just spawn new head at the place of eaten food and skip currentTurn
             if (isFoodEaten) {
                 spawnSnakeElement(newFirstElementPoint.x, newFirstElementPoint.y, true)
                 foodAteAmount++

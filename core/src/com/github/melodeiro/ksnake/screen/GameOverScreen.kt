@@ -14,7 +14,7 @@ import ktx.graphics.use
 class GameOverScreen(private val app: App,
                      private val game: Game,
                      private val batch: Batch,
-                     private val assets: AssetManager,
+                     assets: AssetManager,
                      private val camera: OrthographicCamera) : KtxScreen {
 
     private val font = assets.get<BitmapFont>("Righteous-Regular.ttf")
@@ -31,11 +31,8 @@ class GameOverScreen(private val app: App,
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            app.addScreen(MainMenuScreen(app, game, batch, assets, camera))
             app.setScreen<MainMenuScreen>()
-            app.removeScreen<GameOverScreen>()
             game.reset()
-            dispose()
         }
     }
 }

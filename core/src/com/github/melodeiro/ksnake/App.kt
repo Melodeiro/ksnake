@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.github.melodeiro.ksnake.logic.Game
+import com.github.melodeiro.ksnake.screen.GameOverScreen
+import com.github.melodeiro.ksnake.screen.GameScreen
 import com.github.melodeiro.ksnake.screen.MainMenuScreen
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -30,7 +32,6 @@ class App : KtxGame<KtxScreen>() {
             size = 25
         }
         assetManager.finishLoading()
-        Gdx.app.debug("kek", "top")
 
         context.register {
             bindSingleton(this@App)
@@ -39,7 +40,10 @@ class App : KtxGame<KtxScreen>() {
             bindSingleton(OrthographicCamera().apply { setToOrtho(false, cameraWidth, cameraHeight) })
             bindSingleton(PooledEngine())
             bindSingleton(Game())
+
             addScreen(MainMenuScreen(inject(), inject(), inject(), inject(), inject()))
+            addScreen(GameScreen(inject(), inject(), inject(), inject(), inject(), inject()))
+            addScreen(GameOverScreen(inject(), inject(), inject(), inject(), inject()))
         }
 
         setScreen<MainMenuScreen>()

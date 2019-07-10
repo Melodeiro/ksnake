@@ -13,9 +13,9 @@ import ktx.graphics.color
 import ktx.graphics.use
 
 class MainMenuScreen(private val app: App,
-                     private val game: Game,
+                     game: Game,
                      private val batch: Batch,
-                     private val assets: AssetManager,
+                     assets: AssetManager,
                      private val camera: OrthographicCamera) : KtxScreen {
     private val difficulty = game.difficulty
     private val font = assets.get<BitmapFont>("Righteous-Regular.ttf")
@@ -47,10 +47,7 @@ class MainMenuScreen(private val app: App,
             difficulty.decreaseSpeed()
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            app.addScreen(GameScreen(app, game, batch, assets, camera))
             app.setScreen<GameScreen>()
-            app.removeScreen<MainMenuScreen>()
-            dispose()
         }
     }
 }

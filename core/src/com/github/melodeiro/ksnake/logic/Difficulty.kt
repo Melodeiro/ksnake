@@ -10,7 +10,8 @@ class Difficulty(var trapsToSpawn: Int = 10,
                  val foodsToSpawn: Int = 1,
                  private var speedStep: Int = 7,
                  var turnsToNewTrap: Int = 50,
-                 var turnsToPowerUp: Int = 300) {
+                 var turnsToPowerUp: Int = 300,
+                 val startingSnakeSize: Int = 4) {
 
     private val movingDelays = mutableListOf<Long>()
 

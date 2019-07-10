@@ -1,38 +1,40 @@
 package com.github.melodeiro.ksnake.screen
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
+import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
-import com.github.melodeiro.ksnake.logic.Direction
 import com.github.melodeiro.ksnake.logic.Game
-import com.github.melodeiro.ksnake.logic.GameOver
-import com.github.melodeiro.ksnake.logic.component.Position
-import com.github.melodeiro.ksnake.logic.entity.PowerUp
+import com.github.melodeiro.ksnake.logic.SnakeElement
+import com.github.melodeiro.ksnake.logic.WorldSettings
+import com.github.melodeiro.ksnake.logic.ecs.component.SnakeElementComponent
+import com.github.melodeiro.ksnake.logic.ecs.component.SnakeHeadComponent
+import com.github.melodeiro.ksnake.logic.ecs.component.TextureComponent
+import com.github.melodeiro.ksnake.logic.ecs.component.TransformComponent
+import com.github.melodeiro.ksnake.logic.ecs.system.GameStateSystem
+import com.github.melodeiro.ksnake.logic.ecs.system.RandomSpawnSystem
+import com.github.melodeiro.ksnake.logic.ecs.system.RenderSystem
+import com.github.melodeiro.ksnake.logic.ecs.system.SpawnSystem
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import ktx.app.KtxScreen
+import ktx.ashley.add
 import ktx.ashley.entity
-import ktx.async.KtxAsync
 import ktx.graphics.color
-import ktx.graphics.use
 
 class GameScreen(private val app: App,
                  private val game: Game,
                  private val batch: Batch,
-                 private val assets: AssetManager,
+                 assets: AssetManager,
+                 private val engine: PooledEngine,
                  private val camera: OrthographicCamera) : KtxScreen {
 
-    private val snakeElementImage = Texture("snake_element.png")
-    private val foodImage = Texture("food.png")
-    private val trapImage = Texture("trap.png")
-    private val slowImage = Texture("slow.png")
     private val fieldBackgroundImage = Texture("field_background.png")
     private val font = assets.get<BitmapFont>("Righteous-Regular.ttf")
+
+    private val worldSettings = WorldSettings(0f, 0f, 480f, 480f, 16f)
 
     private var gameJob: Job? = null
 
@@ -46,7 +48,7 @@ class GameScreen(private val app: App,
         batch.projectionMatrix = camera.combined
 
         // Draw all textures
-        batch.use { batch ->
+        /*batch.use { batch ->
             font.draw(batch, "SCORE: ${game.calculateScore()}", game.field.x + 17f, game.field.maxY + font.lineHeight)
             font.draw(batch, "PU: ${game.getCurrentPUInfo()}", game.field.x + 250f, game.field.maxY + font.lineHeight)
             batch.draw(fieldBackgroundImage, game.field.x, game.field.y, game.field.width, game.field.height)
@@ -76,28 +78,35 @@ class GameScreen(private val app: App,
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             game.activateCurrentPU()
-        }
+        }*/
+
+        engine.update(delta)
     }
 
     override fun show() {
-        gameJob = KtxAsync.launch {
-            try {
-                game.runGameLoop()
-            } catch (e: GameOver) {
-                app.addScreen(GameOverScreen(app, game, batch, assets, camera))
-                app.setScreen<GameOverScreen>()
-                app.removeScreen<GameScreen>()
-                dispose()
+        engine.add {
+            addSystem(RandomSpawnSystem(worldSettings))
+            addSystem(SpawnSystem(game.difficulty))
+            addSystem(RenderSystem(batch))
+            addSystem(GameStateSystem())
+        }
+
+        for (i in 0 until game.difficulty.startingSnakeSize) {
+            engine.entity {
+                with<SnakeElementComponent>()
+                with<TransformComponent> {
+                    setPosition(worldSettings.x + 128f + (i * worldSettings.cellSize), worldSettings.y + 128f)
+                }
+                with<TextureComponent> {
+                    texture = Texture("snake_element.png")
+                }
+                if (i == game.difficulty.startingSnakeSize - 1)
+                    with<SnakeHeadComponent>()
             }
         }
     }
 
     override fun dispose() {
-        gameJob?.cancel()
-        snakeElementImage.dispose()
         fieldBackgroundImage.dispose()
-        foodImage.dispose()
-        trapImage.dispose()
-        slowImage.dispose()
     }
 }
