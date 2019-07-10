@@ -2,27 +2,34 @@ package com.github.melodeiro.ksnake.screen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
+import com.github.melodeiro.ksnake.logic.Game
 import ktx.app.KtxScreen
 import ktx.graphics.color
 import ktx.graphics.use
 
-class MainMenuScreen(private val app: App) : KtxScreen {
-    private val camera = OrthographicCamera().apply { setToOrtho(false, app.cameraWidth, app.cameraHeight) }
-    private val difficulty = app.game.difficulty
+class MainMenuScreen(private val app: App,
+                     private val game: Game,
+                     private val batch: Batch,
+                     private val assets: AssetManager,
+                     private val camera: OrthographicCamera) : KtxScreen {
+    private val difficulty = game.difficulty
+    private val font = assets.get<BitmapFont>("Righteous-Regular.ttf")
 
     override fun show() {
-        app.font.color = color(0f, 0.7f, 0f)
-        app.font.data.markupEnabled = true
+        font.color = color(0f, 0.7f, 0f)
+        font.data.markupEnabled = true
     }
 
     override fun render(delta: Float) {
         camera.update()
-        app.batch.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
 
-        app.batch.use {
+        batch.use {
             val textX = 30f
             val text = "Welcome to KSnake\n" +
                     "Press [#FFA500FF]RIGHT ARROW[] key to begin\n" +
@@ -30,7 +37,7 @@ class MainMenuScreen(private val app: App) : KtxScreen {
                     "[#FFA500FF]UP ARROW[] - increase difficulty\n" +
                     "[#FFA500FF]DOWN ARROW[] - decrease difficulty\n" +
                     "[#FFA500FF]SPACE[] - activate Power Up"
-            app.font.draw(it, text, textX, 365f)
+            font.draw(it, text, textX, 365f)
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
@@ -40,7 +47,7 @@ class MainMenuScreen(private val app: App) : KtxScreen {
             difficulty.decreaseSpeed()
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            app.addScreen(GameScreen(app))
+            app.addScreen(GameScreen(app, game, batch, assets, camera))
             app.setScreen<GameScreen>()
             app.removeScreen<MainMenuScreen>()
             dispose()

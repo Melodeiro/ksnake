@@ -6,14 +6,12 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Queue
 import com.github.melodeiro.ksnake.App
-import com.github.melodeiro.ksnake.logic.entities.PowerUp
+import com.github.melodeiro.ksnake.logic.entity.PowerUp
 import kotlinx.coroutines.*
-import ktx.async.KtxAsync
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.math.pow
 
-class Game(private val app: App) {
+class Game {
     val field = WorldBorders(0f, 0f, 480f, 480f)
     val difficulty = Difficulty()
 
@@ -39,12 +37,15 @@ class Game(private val app: App) {
 
     fun getCurrentPUInfo(): String {
         val turnsToExpiration = currentPU.turnsToExpiration(moves)
-        val spaceHint = if (!currentPU.isActive && currentPU.type != PowerUp.Type.NONE) " [#FFA500FF][SPACE][]" else ""
-        val puText = if (turnsToExpiration > 0) "${currentPU.type} $turnsToExpiration" else "${currentPU.type}"
-        return "$puText $spaceHint"
+        var text = currentPU.type.toString()
+        if (turnsToExpiration > 0)
+            text += " $turnsToExpiration"
+        else if (!currentPU.isActive && currentPU.type != PowerUp.Type.NONE)
+            text += " [#FFA500FF][SPACE][]"
+        return text
     }
 
-    suspend fun start() {
+    suspend fun runGameLoop() {
         spawnSnake()
         spawnRandomFood()
         repeat(difficulty.trapsToSpawn) { spawnRandomTrap() }
@@ -233,7 +234,7 @@ class Game(private val app: App) {
             throw GameOver()
     }
 
-    fun restart() {
+    fun reset() {
         moves = 0L
         foodAteAmount = 0
         dX = cellSize

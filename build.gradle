@@ -41,8 +41,7 @@ allprojects {
 
 project(":core") {
     apply plugin: "kotlin"
-
-
+    
     dependencies {
         // Kotlin
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
@@ -54,21 +53,21 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 
-
-
         // libKDX
         compile "io.github.libktx:ktx-app:$ktxVersion"
         compile "io.github.libktx:ktx-async:$ktxVersion"
         compile "io.github.libktx:ktx-collections:$ktxVersion"
         compile "io.github.libktx:ktx-graphics:$ktxVersion"
+        compile "io.github.libktx:ktx-inject:$ktxVersion"
+        compile group: 'io.github.libktx', name: 'ktx-ashley', version: ktxVersion
         compile group: 'io.github.libktx', name: 'ktx-freetype', version: ktxVersion
         compile group: 'io.github.libktx', name: 'ktx-assets', version: ktxVersion
+        compile group: 'io.github.libktx', name: 'ktx-log', version: ktxVersion
     }
 }
 
 project(":desktop") {
     apply plugin: "kotlin"
-
 
     dependencies {
         compile project(":core")

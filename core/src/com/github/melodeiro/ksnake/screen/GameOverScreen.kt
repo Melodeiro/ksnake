@@ -2,33 +2,39 @@ package com.github.melodeiro.ksnake.screen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.github.melodeiro.ksnake.App
+import com.github.melodeiro.ksnake.logic.Game
 import ktx.app.KtxScreen
-import ktx.graphics.color
 import ktx.graphics.use
 
 
-class GameOverScreen(private val app: App) : KtxScreen {
-    private val camera = OrthographicCamera().apply { setToOrtho(false, app.cameraWidth, app.cameraHeight) }
+class GameOverScreen(private val app: App,
+                     private val game: Game,
+                     private val batch: Batch,
+                     private val assets: AssetManager,
+                     private val camera: OrthographicCamera) : KtxScreen {
+    private val font = assets.get<BitmapFont>("Righteous-Regular.ttf")
 
     override fun render(delta: Float) {
         camera.update()
-        app.batch.projectionMatrix = camera.combined
+        batch.projectionMatrix = camera.combined
 
-        app.batch.use {
+        batch.use {
             val text = "[#CC0000FF]GAME OVER[]\n" +
-                    "[#FFA500FF]Score: ${app.game.calculateScore()}[]\n" +
-                    "[#CC0000FF]ENTER - restart[]"
-            app.font.draw(it, text, 140f, 300f)
+                    "[#FFA500FF]Score: ${game.calculateScore()}[]\n" +
+                    "[#CC0000FF]ENTER - reset[]"
+            font.draw(it, text, 140f, 300f)
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            app.addScreen(MainMenuScreen(app))
+            app.addScreen(MainMenuScreen(app, game, batch, assets, camera))
             app.setScreen<MainMenuScreen>()
             app.removeScreen<GameOverScreen>()
-            app.game.restart()
+            game.reset()
             dispose()
         }
     }

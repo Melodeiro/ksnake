@@ -1,6 +1,6 @@
 package com.github.melodeiro.ksnake.logic
 
-import com.github.melodeiro.ksnake.logic.entities.PowerUp
+import com.github.melodeiro.ksnake.logic.entity.PowerUp
 import kotlin.math.pow
 
 class Difficulty(var trapsToSpawn: Int = 10,

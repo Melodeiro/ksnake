@@ -1,4 +1,4 @@
-package com.github.melodeiro.ksnake.logic.entities
+package com.github.melodeiro.ksnake.logic.entity
 
 class PowerUp(val type: Type, val x: Float, val y: Float, val width: Float, val height: Float) {
 
