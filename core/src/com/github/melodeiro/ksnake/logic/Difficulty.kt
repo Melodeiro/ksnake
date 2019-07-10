@@ -1,7 +1,10 @@
 package com.github.melodeiro.ksnake.logic
 
 import com.github.melodeiro.ksnake.logic.entity.PowerUp
+import ktx.log.logger
 import kotlin.math.pow
+
+private val log = logger<Difficulty>()
 
 class Difficulty(var trapsToSpawn: Int = 10,
                  val foodsToSpawn: Int = 1,
@@ -16,8 +19,15 @@ class Difficulty(var trapsToSpawn: Int = 10,
 
     init {
         movingDelays.add(1500)
-        for (i in 1..14)
-            movingDelays.add((1532f / (1.5f.pow(i))).toLong())
+        for (i in 1..14) {
+            val movingDelay = (1532f / (1.5f.pow(i))).toLong()
+            movingDelays.add(movingDelay)
+        }
+        log.debug {
+            var result = "Generated delays:\n"
+            movingDelays.forEach { result += "$it\n" }
+            result
+        }
     }
 
     fun getMovingDelay(currentPowerUp: PowerUp): Long {
@@ -34,7 +44,7 @@ class Difficulty(var trapsToSpawn: Int = 10,
             return
 
         speedStep++
-        println("Speed increased to $speedLevel, current frame delay is ${getMovingDelay(PowerUp.none())}")
+        log.debug { "Speed increased to $speedLevel, current frame delay is ${getMovingDelay(PowerUp.none())}" }
     }
 
     fun decreaseSpeed() {
@@ -42,6 +52,6 @@ class Difficulty(var trapsToSpawn: Int = 10,
             return
 
         speedStep--
-        println("Speed decreased to $speedLevel, current frame delay is ${getMovingDelay(PowerUp.none())}")
+        log.debug { "Speed decreased to $speedLevel, current frame delay is ${getMovingDelay(PowerUp.none())}" }
     }
 }

@@ -11,12 +11,12 @@ import com.github.melodeiro.ksnake.logic.Game
 import ktx.app.KtxScreen
 import ktx.graphics.use
 
-
 class GameOverScreen(private val app: App,
                      private val game: Game,
                      private val batch: Batch,
                      private val assets: AssetManager,
                      private val camera: OrthographicCamera) : KtxScreen {
+
     private val font = assets.get<BitmapFont>("Righteous-Regular.ttf")
 
     override fun render(delta: Float) {

@@ -26,6 +26,7 @@ class GameScreen(private val app: App,
                  private val batch: Batch,
                  private val assets: AssetManager,
                  private val camera: OrthographicCamera) : KtxScreen {
+
     private val snakeElementImage = Texture("snake_element.png")
     private val foodImage = Texture("food.png")
     private val trapImage = Texture("trap.png")

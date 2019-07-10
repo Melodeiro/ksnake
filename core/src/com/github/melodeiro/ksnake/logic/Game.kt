@@ -8,8 +8,11 @@ import com.badlogic.gdx.utils.Queue
 import com.github.melodeiro.ksnake.App
 import com.github.melodeiro.ksnake.logic.entity.PowerUp
 import kotlinx.coroutines.*
+import ktx.log.logger
 import kotlin.coroutines.coroutineContext
 import kotlin.math.pow
+
+private val log = logger<Game>()
 
 class Game {
     val field = WorldBorders(0f, 0f, 480f, 480f)

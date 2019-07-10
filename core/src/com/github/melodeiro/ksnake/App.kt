@@ -1,6 +1,7 @@
 package com.github.melodeiro.ksnake
 
 import com.badlogic.ashley.core.PooledEngine
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -15,14 +16,12 @@ import ktx.freetype.registerFreeTypeFontLoaders
 import ktx.inject.Context
 import ktx.log.logger
 
-private val log = logger<Game>()
+private val log = logger<App>()
 
 class App : KtxGame<KtxScreen>() {
     private val cameraWidth = 480f
     private val cameraHeight = 525f
     private val assetManager = AssetManager()
-    //val font: BitmapFont by lazy { assetManager.get<BitmapFont>("Righteous-Regular.ttf") }
-
     private val context = Context()
 
     override fun create() {
@@ -31,6 +30,7 @@ class App : KtxGame<KtxScreen>() {
             size = 25
         }
         assetManager.finishLoading()
+        Gdx.app.debug("kek", "top")
 
         context.register {
             bindSingleton(this@App)
@@ -47,7 +47,7 @@ class App : KtxGame<KtxScreen>() {
     }
 
     override fun dispose() {
-        log.debug { "Entities in engine: ${context.inject<PooledEngine>().entities.size()}"}
+        log.debug { "Entities in engine: ${context.inject<PooledEngine>().entities.size()}" }
         context.dispose()
         super.dispose()
     }
